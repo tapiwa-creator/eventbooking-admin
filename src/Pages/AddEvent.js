@@ -45,15 +45,14 @@ const BLANK_FORM = {
 
 const STATUS_OPTIONS = ["Upcoming", "Ongoing", "Completed", "Cancelled"];
 
-// ── Matches Dashboard field labels: 14px / 500 / #111827 ─────────────────────
 const inp = {
     height: "44px",
     border: "1.5px solid #e5e7eb",
     borderRadius: "8px",
     padding: "0 14px",
-    fontSize: "14px",        // text-sm
+    fontSize: "14px",
     fontWeight: 400,
-    color: "#111827",        // text-gray-900
+    color: "#111827",
     background: "#fff",
     fontFamily: "inherit",
     outline: "none",
@@ -65,7 +64,6 @@ const inp = {
 function Field({ label, children, half }) {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: half ? "1 1 0" : undefined }}>
-            {/* text-sm font-medium text-gray-900 — matches Dashboard labels */}
             <label style={{ fontSize: "14px", fontWeight: 500, color: "#111827" }}>{label}</label>
             {children}
         </div>
@@ -75,7 +73,6 @@ function Field({ label, children, half }) {
 function focusStyle(e) { e.target.style.borderColor = "#7c3aed"; e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)"; }
 function blurStyle(e) { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; }
 
-// ─── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ message, type }) {
     const ok = type === "success";
     return (
@@ -88,7 +85,7 @@ function Toast({ message, type }) {
             border: `1.5px solid ${ok ? "#86efac" : "#fca5a5"}`,
             borderRadius: "12px", padding: "14px 20px",
             boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-            fontSize: "14px",        // text-sm — matches Dashboard body
+            fontSize: "14px",
             fontWeight: 600,
             color: ok ? "#166534" : "#991b1b",
             whiteSpace: "nowrap",
@@ -113,7 +110,6 @@ function Toast({ message, type }) {
     );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function CreateEventView({ onBack, onCreated }) {
     const [form, setForm] = useState(BLANK_FORM);
     const [tiers, setTiers] = useState(DEFAULT_TIERS.map(t => ({ ...t })));
@@ -194,7 +190,6 @@ export default function CreateEventView({ onBack, onCreated }) {
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: "20px",
     };
 
-    // Section title matches Dashboard: text-base font-bold text-gray-900 + text-sm text-gray-500
     const SectionTitle = ({ title, sub }) => (
         <div style={{ marginBottom: "20px" }}>
             <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#111827" }}>{title}</h2>
@@ -202,21 +197,25 @@ export default function CreateEventView({ onBack, onCreated }) {
         </div>
     );
 
-    // Helper / hint text: text-xs text-gray-400 — matches Dashboard small text
     const hint = { fontSize: "12px", fontWeight: 400, color: "#9CA3AF" };
 
     const currencySym = { USD: "$", ZAR: "R", EUR: "€", GBP: "£", ZWL: "Z$" }[form.currency] ?? form.currency;
+
+    // ── Green palette (matches dashboard sidebar #4ab360 / #3d7a4a) ──────────
+    const GREEN        = "#3d7a4a";   // primary green — same as dashboard brand
+    const GREEN_HOVER  = "#2e5e38";   // darker on hover
+    const GREEN_DIS    = "#a0c8aa";   // disabled state
+    const GREEN_BG     = "#f0f7f1";   // soft green background for active pricing card
+    const GREEN_RING   = "rgba(61,122,74,0.18)";
 
     return (
         <div className="font-sans bg-gray-50" style={{ minHeight: "100vh", overflowY: "auto", boxSizing: "border-box", padding: "32px 40px" }}>
             {toast && <Toast message={toast.message} type={toast.type} />}
 
-            {/* Page header — text-2xl font-bold matches Dashboard h1 */}
             <div style={{ marginBottom: "28px" }}>
                 <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#111827", margin: 0 }}>
                     Create New Event
                 </h1>
-                {/* text-sm text-gray-500 — identical to Dashboard subtitle */}
                 <p style={{ fontSize: "14px", fontWeight: 400, color: "#6B7280", margin: "4px 0 0" }}>
                     Fill in the details below to publish your event
                 </p>
@@ -322,11 +321,9 @@ export default function CreateEventView({ onBack, onCreated }) {
                                         <circle cx="8.5" cy="8.5" r="1.5" />
                                         <polyline points="21 15 16 10 5 21" />
                                     </svg>
-                                    {/* text-sm font-medium text-gray-500 */}
                                     <p style={{ margin: "10px 0 4px", fontSize: "14px", fontWeight: 500, color: "#6B7280" }}>
                                         Click to upload image
                                     </p>
-                                    {/* text-xs text-gray-400 */}
                                     <p style={{ margin: 0, ...hint }}>PNG, JPG, WEBP up to 10 MB</p>
                                 </>
                             )}
@@ -337,10 +334,10 @@ export default function CreateEventView({ onBack, onCreated }) {
                         <label style={{
                             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                             padding: "11px", border: "1.5px solid #e5e7eb", borderRadius: "8px",
-                            fontSize: "14px", fontWeight: 500, color: "#374151",   // text-sm font-medium
+                            fontSize: "14px", fontWeight: 500, color: "#374151",
                             cursor: "pointer", background: "#fff", transition: "border-color 0.15s",
                         }}
-                            onMouseOver={e => e.currentTarget.style.borderColor = "#7c3aed"}
+                            onMouseOver={e => e.currentTarget.style.borderColor = GREEN}
                             onMouseOut={e => e.currentTarget.style.borderColor = "#e5e7eb"}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -359,21 +356,22 @@ export default function CreateEventView({ onBack, onCreated }) {
                             </p>
                         )}
 
+                        {/* ── PUBLISH BUTTON — green ── */}
                         <button
                             onClick={handleSubmit}
                             disabled={loading || !form.title.trim()}
                             style={{
                                 marginTop: "auto", width: "100%", padding: "13px",
-                                background: loading || !form.title.trim() ? "#c4b5fd" : "#7c3aed",
+                                background: loading || !form.title.trim() ? GREEN_DIS : GREEN,
                                 color: "#fff", border: "none", borderRadius: "8px",
-                                fontSize: "14px", fontWeight: 700,   // text-sm font-bold — matches Dashboard CTA
+                                fontSize: "14px", fontWeight: 700,
                                 cursor: loading || !form.title.trim() ? "not-allowed" : "pointer",
                                 fontFamily: "inherit",
                                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                                 transition: "background 0.2s",
                             }}
-                            onMouseOver={e => { if (!loading && form.title.trim()) e.currentTarget.style.background = "#047857"; }}
-                            onMouseOut={e => { if (!loading && form.title.trim()) e.currentTarget.style.background = "#7c3aed"; }}
+                            onMouseOver={e => { if (!loading && form.title.trim()) e.currentTarget.style.background = GREEN_HOVER; }}
+                            onMouseOut={e => { if (!loading && form.title.trim()) e.currentTarget.style.background = GREEN; }}
                         >
                             {loading ? (
                                 <>
@@ -403,7 +401,6 @@ export default function CreateEventView({ onBack, onCreated }) {
                 <SectionTitle title="Booking & Pricing" sub="Choose how attendees book and pay" />
 
                 <div style={{ marginBottom: "20px" }}>
-                    {/* text-sm font-medium text-gray-900 */}
                     <label style={{ fontSize: "14px", fontWeight: 500, color: "#111827", display: "block", marginBottom: "6px" }}>
                         Currency
                     </label>
@@ -422,25 +419,26 @@ export default function CreateEventView({ onBack, onCreated }) {
                                 onClick={() => setForm(p => ({ ...p, pricingMode: mode.id }))}
                                 style={{
                                     flex: 1, padding: "16px 18px",
-                                    border: active ? "2px solid #7c3aed" : "1.5px solid #e5e7eb",
-                                    borderRadius: "12px", background: active ? "#faf5ff" : "#fff",
+                                    // ── active card: green border + green tinted bg ──
+                                    border: active ? `2px solid ${GREEN}` : "1.5px solid #e5e7eb",
+                                    borderRadius: "12px",
+                                    background: active ? GREEN_BG : "#fff",
                                     cursor: "pointer", transition: "border-color 0.15s, background 0.15s",
                                 }}
-                                onMouseOver={e => { if (!active) e.currentTarget.style.borderColor = "#c4b5fd"; }}
+                                onMouseOver={e => { if (!active) e.currentTarget.style.borderColor = "#a0c8aa"; }}
                                 onMouseOut={e => { if (!active) e.currentTarget.style.borderColor = "#e5e7eb"; }}
                             >
                                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
                                     <div style={{
                                         width: "14px", height: "14px", borderRadius: "50%",
                                         border: active ? "none" : "2px solid #d1d5db",
-                                        background: active ? "#7c3aed" : "transparent",
+                                        // ── active radio dot: green ──
+                                        background: active ? GREEN : "transparent",
                                         flexShrink: 0,
-                                        boxShadow: active ? "0 0 0 3px rgba(124,58,237,0.2)" : "none",
+                                        boxShadow: active ? `0 0 0 3px ${GREEN_RING}` : "none",
                                     }} />
-                                    {/* text-sm font-bold — matches Dashboard section labels */}
                                     <span style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>{mode.title}</span>
                                 </div>
-                                {/* text-xs text-gray-500 — matches Dashboard helper text */}
                                 <p style={{ margin: 0, fontSize: "12px", fontWeight: 400, color: "#6B7280", lineHeight: 1.5 }}>{mode.desc}</p>
                             </div>
                         );
@@ -503,9 +501,11 @@ export default function CreateEventView({ onBack, onCreated }) {
                         </div>
                         <button onClick={addCustomTier} style={{
                             marginTop: "12px", background: "none",
-                            border: "1.5px dashed #c4b5fd", borderRadius: "8px",
+                            // ── "Add Custom Tier" dashed button: green to match brand ──
+                            border: `1.5px dashed ${GREEN_DIS}`,
+                            borderRadius: "8px",
                             padding: "8px 16px", cursor: "pointer",
-                            color: "#7c3aed", fontSize: "14px", fontWeight: 500,
+                            color: GREEN, fontSize: "14px", fontWeight: 500,
                             fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px",
                         }}>
                             + Add Custom Tier

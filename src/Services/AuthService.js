@@ -10,7 +10,7 @@ import {
     signInWithEmailAndPassword, 
     signOut as firebaseSignOut, 
     setPersistence, 
-    browserLocalPersistence, 
+    browserSessionPersistence, 
     updatePassword,
     updateEmail as firebaseUpdateEmail
 } from "firebase/auth";
@@ -22,7 +22,7 @@ const SESSION_KEY = "adventsphere_session";
 
 function persistSession(user) {
     try {
-        localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
     } catch {
         // Storage unavailable — silent fail
     }
@@ -30,7 +30,7 @@ function persistSession(user) {
 
 function clearSession() {
     try {
-        localStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(SESSION_KEY);
     } catch {
         // ignore
     }
@@ -83,7 +83,7 @@ const AuthService = {
      */
     async signIn({ email, password }) {
         try {
-            await setPersistence(auth, browserLocalPersistence);
+            await setPersistence(auth, browserSessionPersistence);
             const userCredential = await signInWithEmailAndPassword(auth, email.toLowerCase().trim(), password);
             const user = userCredential.user;
             
@@ -126,7 +126,7 @@ const AuthService = {
      */
     getCurrentUser() {
         try {
-            const raw = localStorage.getItem(SESSION_KEY);
+            const raw = sessionStorage.getItem(SESSION_KEY);
             return raw ? JSON.parse(raw) : null;
         } catch {
             return null;

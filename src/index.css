@@ -11,6 +11,14 @@ h1, h2, h3, h4, h5, h6,
   font-family: 'Poppins', sans-serif !important;
 }
 
+:root {
+  --color-background-primary: #ffffff;
+  --color-background-tertiary: #f7f8fa;
+  --color-border-tertiary: #e4e8e4;
+  --color-primary-green: #4ab360;
+  --color-primary-dark-green: #3d7a4a;
+}
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;

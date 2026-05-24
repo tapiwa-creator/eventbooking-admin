@@ -59,6 +59,13 @@ function ErrorBanner({ message, isNetwork, onDismiss }) {
     );
 }
 
+const avatarColors = [
+    { bg: '#dcfce7', text: '#15803d' },
+    { bg: '#ccfbf1', text: '#0f766e' },
+    { bg: '#dbeafe', text: '#1d4ed8' },
+    { bg: '#fef3c7', text: '#b45309' },
+];
+
 export default function Dashboard() {
     const [events, setEvents] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -66,7 +73,6 @@ export default function Dashboard() {
     const [dbError, setDbError] = useState(null);
     const [isNetworkErr, setIsNetErr] = useState(false);
 
-    // Subscribe to real-time events and bookings
     useEffect(() => {
         let unsubscribeEvents;
         let unsubscribeBookings;
@@ -75,7 +81,6 @@ export default function Dashboard() {
             try {
                 setLoading(true);
 
-                // Subscribe to events
                 unsubscribeEvents = subscribeToEvents(
                     (data) => {
                         setEvents(data);
@@ -91,7 +96,6 @@ export default function Dashboard() {
                     }
                 );
 
-                // Subscribe to bookings
                 unsubscribeBookings = subscribeToBookings(
                     (data) => {
                         setBookings(data);
@@ -121,21 +125,17 @@ export default function Dashboard() {
         };
     }, []);
 
-    // Calculate statistics from real events and bookings
     const calculateStats = () => {
         const totalEvents = events.length;
         const upcomingEvents = events.filter(e => e.status === "Upcoming").length;
 
-        // Calculate total tickets sold from bookings (sum of quantities)
         const totalTicketsSold = bookings.reduce((sum, booking) => {
-            // Only count confirmed bookings
             if (booking.status === "confirmed" || booking.status === "Confirmed") {
                 return sum + (booking.quantity || 0);
             }
             return sum;
         }, 0);
 
-        // Calculate total booking value (revenue) - USD only
         const totalRevenue = bookings.reduce((sum, booking) => {
             if (booking.status === "confirmed" || booking.status === "Confirmed") {
                 return sum + (booking.totalAmount || 0);
@@ -143,7 +143,6 @@ export default function Dashboard() {
             return sum;
         }, 0);
 
-        // Calculate total unique attendees (based on email)
         const uniqueAttendees = new Set();
         bookings.forEach(booking => {
             if (booking.status === "confirmed" || booking.status === "Confirmed") {
@@ -162,9 +161,7 @@ export default function Dashboard() {
         };
     };
 
-    // Format recent events with real booking data from bookings collection
     const getRecentEvents = () => {
-        // Get upcoming events sorted by date
         const upcomingEventsList = events
             .filter(e => e.status === "Upcoming")
             .sort((a, b) => {
@@ -175,7 +172,6 @@ export default function Dashboard() {
             .slice(0, 5);
 
         return upcomingEventsList.map(event => {
-            // Format the date for display
             let formattedDate = event.date;
             if (event.date && event.time) {
                 formattedDate = `${event.date} at ${event.time}`;
@@ -185,29 +181,25 @@ export default function Dashboard() {
                 formattedDate = "Date TBD";
             }
 
-            // Get real bookings count for this event from bookings collection
             const eventBookings = bookings.filter(b =>
                 b.eventId === event.id &&
                 (b.status === "confirmed" || b.status === "Confirmed")
             );
 
             const totalBookingsForEvent = eventBookings.reduce((sum, b) => sum + (b.quantity || 0), 0);
-
-            // Get capacity
-            let capacityText = event.totalCapacity || "∞";
+            const capacityNum = parseInt(event.totalCapacity) || 0;
 
             return {
                 id: event.id,
                 name: event.title,
                 date: formattedDate,
                 bookings: totalBookingsForEvent,
-                capacity: `${totalBookingsForEvent} / ${capacityText}`,
-                revenue: eventBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
+                capacityNum: capacityNum,
+                capacity: capacityNum > 0 ? `${totalBookingsForEvent} / ${capacityNum} capacity` : `${totalBookingsForEvent} / ∞ capacity`,
             };
         });
     };
 
-    // Get recent bookings for display
     const getRecentBookings = () => {
         return bookings
             .sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate))
@@ -229,25 +221,33 @@ export default function Dashboard() {
             label: "Total Programmes",
             value: calculateStats().totalEvents,
             sub: `${calculateStats().upcomingEvents} upcoming`,
-            icon: <CalendarIcon />
+            icon: <CalendarIcon />,
+            color: "#4ab360",
+            bgColor: "#f0faf4"
         },
         {
             label: "Total Registrations",
             value: calculateStats().totalTicketsSold,
             sub: "Across all programmes",
-            icon: <TicketIcon />
+            icon: <TicketIcon />,
+            color: "#0d9488",
+            bgColor: "#ccfbf1"
         },
         {
             label: "Total Attendees",
             value: calculateStats().uniqueAttendees,
             sub: "Unique attendees",
-            icon: <UsersIcon />
+            icon: <UsersIcon />,
+            color: "#2563eb",
+            bgColor: "#dbeafe"
         },
         {
             label: "Total Reg Fee",
             value: `$${calculateStats().totalRevenue.toFixed(2)}`,
             sub: "Total revenue from bookings",
-            icon: <TrendingUpIcon />
+            icon: <TrendingUpIcon />,
+            color: "#d97706",
+            bgColor: "#fef3c7"
         },
     ];
 
@@ -256,10 +256,10 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                        style={{ borderColor: "#059669", borderTopColor: "transparent" }} />
+                        style={{ borderColor: "#4ab360", borderTopColor: "transparent" }} />
                     <p className="text-sm text-gray-500">Loading dashboard...</p>
                 </div>
             </div>
@@ -267,8 +267,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 font-sans">
-            {/* Page Header */}
+        <div className="font-sans">
             <div className="flex items-start justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 leading-tight">Dashboard</h1>
@@ -276,7 +275,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Error Banner */}
             {dbError && (
                 <ErrorBanner
                     message={dbError}
@@ -285,13 +283,15 @@ export default function Dashboard() {
                 />
             )}
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-4 gap-4 mb-6">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                    <div key={stat.label} className="bg-white relative overflow-hidden" style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)", padding: "20px" }}>
+                        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ backgroundColor: stat.color }} />
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-sm text-gray-500 font-medium">{stat.label}</span>
-                            <span style={{ color: "#059669" }}>{stat.icon}</span>
+                            <div className="w-9 h-9 flex items-center justify-center" style={{ backgroundColor: stat.bgColor, color: stat.color, borderRadius: "10px" }}>
+                                {stat.icon}
+                            </div>
                         </div>
                         <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
                         <div className="text-xs text-gray-400">{stat.sub}</div>
@@ -299,10 +299,8 @@ export default function Dashboard() {
                 ))}
             </div>
 
-            {/* Two Column Layout */}
             <div className="grid grid-cols-2 gap-6">
-                {/* Recent Events Section */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white shadow-none" style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)", padding: "24px" }}>
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-base font-bold text-gray-900">Upcoming Events</h2>
                     </div>
@@ -315,37 +313,45 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         <div className="flex flex-col gap-3">
-                            {recentEvents.map((event) => (
-                                <div
-                                    key={event.id}
-                                    className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all duration-150"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                            style={{ backgroundColor: "#d1fae5" }}
-                                        >
-                                            <span style={{ color: "#059669" }}>
-                                                <CalendarIcon className="w-5 h-5" />
-                                            </span>
+                            {recentEvents.map((event) => {
+                                const percent = event.capacityNum > 0 ? (event.bookings / event.capacityNum) * 100 : 0;
+                                return (
+                                    <div
+                                        key={event.id}
+                                        className="p-4 transition-all duration-150"
+                                        style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)" }}
+                                        onMouseOver={e => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                                        onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-3">
+                                                <div
+                                                    className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+                                                    style={{ backgroundColor: "#f0faf4", borderRadius: "10px", color: "#4ab360" }}
+                                                >
+                                                    <CalendarIcon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-semibold text-gray-800">{event.name}</div>
+                                                    <div className="text-xs text-gray-400 mt-0.5">{event.date}</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-bold text-gray-800">{event.bookings} tickets</div>
+                                                <div className="text-xs text-gray-400 mt-0.5">{event.capacity}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="text-sm font-semibold text-gray-800">{event.name}</div>
-                                            <div className="text-xs text-gray-400 mt-0.5">{event.date}</div>
+                                        <div className="w-full bg-gray-100 rounded-full h-1 mt-1">
+                                            <div className="bg-[#4ab360] h-1 rounded-full" style={{ width: `${Math.min(percent, 100)}%` }}></div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-sm font-bold text-gray-800">{event.bookings} tickets</div>
-                                        <div className="text-xs text-gray-400 mt-0.5">{event.capacity} capacity</div>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
-                {/* Recent Bookings Section */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div className="bg-white shadow-none" style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)", padding: "24px" }}>
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-base font-bold text-gray-900">Recent Bookings</h2>
                     </div>
@@ -358,25 +364,40 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         <div className="flex flex-col gap-3">
-                            {recentBookings.map((booking) => (
-                                <div
-                                    key={booking.id}
-                                    className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all duration-150"
-                                >
-                                    <div>
-                                        <div className="text-sm font-semibold text-gray-800">{booking.attendeeName}</div>
-                                        <div className="text-xs text-gray-400 mt-0.5">{booking.eventTitle}</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-sm font-bold text-gray-800">
-                                            {booking.quantity} {booking.quantity === 1 ? 'ticket' : 'tickets'}
+                            {recentBookings.map((booking, idx) => {
+                                const initials = booking.attendeeName ? booking.attendeeName.substring(0, 2).toUpperCase() : "U";
+                                const avatarTheme = avatarColors[idx % avatarColors.length];
+                                return (
+                                    <div
+                                        key={booking.id}
+                                        className="flex items-center justify-between p-4 transition-all duration-150"
+                                        style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)" }}
+                                        onMouseOver={e => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                                        onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                                                style={{ backgroundColor: avatarTheme.bg, color: avatarTheme.text }}
+                                            >
+                                                {initials}
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-semibold text-gray-800">{booking.attendeeName}</div>
+                                                <div className="text-xs text-gray-400 mt-0.5">{booking.eventTitle}</div>
+                                            </div>
                                         </div>
-                                        <div className="text-xs text-emerald-600 font-semibold mt-0.5">
-                                            {booking.currency}{booking.totalAmount}
+                                        <div className="text-right">
+                                            <div className="text-sm font-bold text-gray-800">
+                                                {booking.quantity} {booking.quantity === 1 ? 'ticket' : 'tickets'}
+                                            </div>
+                                            <div className="text-xs font-semibold mt-0.5" style={{ color: "#4ab360" }}>
+                                                {booking.currency}{booking.totalAmount}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

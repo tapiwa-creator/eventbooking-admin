@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Swap out your font family string here if needed
 const FONT = "'Inter', sans-serif";
@@ -161,6 +161,17 @@ function LogoutModal({ onConfirm, onCancel }) {
 export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
   const [showLogout, setShowLogout]     = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    function handler(e) {
+      if (userMenuOpen && userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [userMenuOpen]);
 
   const firstName = user?.firstName || (user?.email ? user.email.split("@")[0].split(".")[0] : "User");
   const lastName  = user?.lastName  || "";
@@ -175,15 +186,15 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         .sb-nav-btn { transition: background 0.12s, color 0.12s; }
-        .sb-menu-item:hover { background: #f0faf4 !important; }
-        .sb-user-row:hover  { background: #f5faf7 !important; }
+        .sb-menu-item:hover { background: #f9fafb !important; }
+        .sb-user-row:hover  { background: rgba(255, 255, 255, 0.05) !important; }
       `}</style>
 
       <aside style={{
         position: "fixed", top: 0, left: 0,
         width: "230px", height: "100vh",
-        background: "#ffffff",
-        borderRight: "1.5px solid #e4e8e4",
+        background: "#1a2e1f",
+        borderRight: "0.5px solid rgba(255, 255, 255, 0.08)",
         display: "flex", flexDirection: "column",
         zIndex: 100, fontFamily: FONT,
         overflowY: "auto", overflowX: "hidden",
@@ -193,15 +204,14 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
         <div style={{
           display: "flex", alignItems: "center", gap: "12px",
           padding: "20px 22px 18px",
-          borderBottom: "1.5px solid #eef0ee",
+          borderBottom: "0.5px solid rgba(255, 255, 255, 0.08)",
         }}>
           <div style={{
-            width: 40, height: 40, borderRadius: "50%",
-            background: "#e6f0e9",
+            width: 40, height: 40, borderRadius: "10px",
+            background: "rgba(255, 255, 255, 0.1)",
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
             overflow: "hidden",
-            boxShadow: "0 2px 8px rgba(26,61,40,0.25)",
           }}>
             <img
               src="/sda.png"
@@ -209,12 +219,12 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
               style={{ width: 26, height: 26, objectFit: "contain", display: "block" }}
               onError={e => {
                 e.target.style.display = "none";
-                e.target.parentNode.innerHTML = `<span style="color:#1a3d28;font-weight:800;font-size:15px;font-family:${FONT}">A</span>`;
+                e.target.parentNode.innerHTML = `<span style="color:#ffffff;font-weight:800;font-size:15px;font-family:${FONT}">A</span>`;
               }}
             />
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: "15px", fontWeight: 800, color: "#111c16", letterSpacing: "-0.3px", lineHeight: 1.1 }}>
+            <p style={{ margin: 0, fontSize: "15px", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.3px", lineHeight: 1.1 }}>
               AdventSphere
             </p>
             <p style={{ margin: "2px 0 0", fontSize: "11px", fontWeight: 500, color: "#a8bfaf", letterSpacing: "0.1px" }}>
@@ -248,23 +258,23 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
                       width: "100%", padding: "10px 12px",
                       borderRadius: "10px", marginBottom: "2px",
                       border: "none",
-                      background: active ? "#1a3d28" : "transparent",
-                      color: active ? "#ffffff" : "#7a9984",
+                      background: active ? "rgba(74, 179, 96, 0.15)" : "transparent",
+                      color: active ? "#4ab360" : "#a8bfaf",
                       fontSize: "14px", fontWeight: active ? 600 : 500,
                       fontFamily: FONT, cursor: "pointer", textAlign: "left",
-                      boxShadow: active ? "0 2px 10px rgba(26,61,40,0.28)" : "none",
+                      boxShadow: "none",
                       transition: "background 0.12s, color 0.12s, box-shadow 0.12s",
                     }}
                     onMouseOver={e => {
                       if (!active) {
-                        e.currentTarget.style.background = "#f0f5f1";
-                        e.currentTarget.style.color = "#3d5447";
+                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                        e.currentTarget.style.color = "#ffffff";
                       }
                     }}
                     onMouseOut={e => {
                       if (!active) {
                         e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "#7a9984";
+                        e.currentTarget.style.color = "#a8bfaf";
                       }
                     }}
                   >
@@ -280,7 +290,7 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
         </div>
 
         {/* ── User footer ── */}
-        <div style={{ padding: "14px 12px", borderTop: "1.5px solid #eef0ee", position: "relative" }}>
+        <div ref={userMenuRef} style={{ padding: "14px 12px", borderTop: "0.5px solid rgba(255, 255, 255, 0.08)", position: "relative" }}>
 
           {userMenuOpen && (
             <div style={{
@@ -329,20 +339,19 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
           >
             <div style={{
               width: 34, height: 34, borderRadius: "50%",
-              background: "#1a3d28",
+              background: "rgba(255, 255, 255, 0.1)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "12px", fontWeight: 700, color: "#fff", flexShrink: 0,
-              boxShadow: "0 1px 4px rgba(26,61,40,0.2)",
+              fontSize: "12px", fontWeight: 700, color: "#ffffff", flexShrink: 0,
             }}>
               {initials}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "#111c16", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <p style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {fullName}
               </p>
               <p style={{ margin: "2px 0 0", fontSize: "11.5px", color: "#a8bfaf" }}>{role}</p>
             </div>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b8ccbc" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a8bfaf" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
               style={{ flexShrink: 0, transform: userMenuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
               <polyline points="6 9 12 15 18 9"/>
             </svg>

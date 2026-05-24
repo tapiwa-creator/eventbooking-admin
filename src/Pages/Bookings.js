@@ -1,18 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import * as XLSX from "xlsx";
-
-const BOOKINGS_DATA = [
-    { id: 1, name: "Comfort Tapiwa Mkunyadze", email: "tapiwacomfort086@gmail.com", phone: "0781406806", event: "Winter Youth Camp", tickets: 1, status: "Confirmed", bookedOn: "May 19, 2026" },
-    { id: 2, name: "Comfort Tapiwa Mkunyadze", email: "tapiwacomfort086@gmail.com", phone: "0781406806", event: "Winter Youth Camp", tickets: 1, status: "Confirmed", bookedOn: "May 19, 2026" },
-    { id: 3, name: "Comfort Tapiwa Mkunyadze", email: "tapiwacomfort086@gmail.com", phone: "0781972985", event: "Winter Youth Camp", tickets: 2, status: "Confirmed", bookedOn: "May 19, 2026" },
-    { id: 4, name: "Comfort Tapiwa Mkunyadze", email: "tapiwacomfort086@gmail.com", phone: "0781406806", event: "Public Campus Ministries", tickets: 1, status: "Confirmed", bookedOn: "May 19, 2026" },
-    { id: 5, name: "Comfort Tapiwa Mkunyadze", email: "tapiwacomfort086@gmail.com", phone: "0771111111", event: "Winter Youth Camp", tickets: 3, status: "Confirmed", bookedOn: "May 18, 2026" },
-    { id: 6, name: "Tatenda Moyo", email: "tatenda@gmail.com", phone: "0772345678", event: "Public Campus Ministries", tickets: 2, status: "Confirmed", bookedOn: "May 17, 2026" },
-    { id: 7, name: "Rudo Chikwanda", email: "rudo@gmail.com", phone: "0773456789", event: "Winter Youth Camp", tickets: 1, status: "Failed", bookedOn: "May 16, 2026" },
-    { id: 8, name: "Farai Nhema", email: "farai@gmail.com", phone: "0774567890", event: "Winter Youth Camp", tickets: 2, status: "Confirmed", bookedOn: "May 15, 2026" },
-    { id: 9, name: "Simba Dube", email: "simba@gmail.com", phone: "0775678901", event: "Public Campus Ministries", tickets: 1, status: "Failed", bookedOn: "May 14, 2026" },
-    { id: 10, name: "Nyasha Banda", email: "nyasha@gmail.com", phone: "0776789012", event: "Winter Youth Camp", tickets: 4, status: "Confirmed", bookedOn: "May 13, 2026" },
-];
+import { subscribeToBookings } from "../Services/BookingsServices";
 
 const FONT = "'Inter', sans-serif";
 
@@ -34,14 +22,38 @@ function StatusBadge({ status }) {
     );
 }
 
-function TicketBadge({ count }) {
+function RegistrationBadge({ count }) {
     return (
         <span style={{
             display: "inline-block", background: "#d1fae5", color: "#064e3b",
             padding: "3px 11px", borderRadius: 999,
             fontSize: 12, fontWeight: 700, fontFamily: FONT,
         }}>
-            {count} {count === 1 ? "ticket" : "tickets"}
+            {count} {count === 1 ? "registration" : "registrations"}
+        </span>
+    );
+}
+
+function FeeBadge({ amount }) {
+    return (
+        <span style={{
+            display: "inline-block", background: "#fef3c7", color: "#92400e",
+            padding: "3px 11px", borderRadius: 999,
+            fontSize: 12, fontWeight: 700, fontFamily: FONT,
+        }}>
+            ${amount.toFixed(2)}
+        </span>
+    );
+}
+
+function AttendeeBadge({ count }) {
+    return (
+        <span style={{
+            display: "inline-block", background: "#dbeafe", color: "#1e40af",
+            padding: "3px 11px", borderRadius: 999,
+            fontSize: 12, fontWeight: 700, fontFamily: FONT,
+        }}>
+            {count} {count === 1 ? "attendee" : "attendees"}
         </span>
     );
 }
@@ -53,7 +65,8 @@ function exportEventExcel(eventName, rows) {
         Email: b.email,
         Phone: b.phone,
         Event: b.event,
-        Tickets: b.tickets,
+        Registrations: b.tickets,
+        Fee: `$${(b.totalAmount || 0).toFixed(2)}`,
         Status: b.status,
         "Booked On": b.bookedOn,
     }));
@@ -61,8 +74,7 @@ function exportEventExcel(eventName, rows) {
     ws["!cols"] = [26, 32, 14, 28, 10, 12, 14].map(w => ({ wch: w }));
     const sheetName = eventName.replace(/[\\/?*[\]:]/g, "").slice(0, 31);
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    const filename = `bookings_${eventName.replace(/\s+/g, "_").toLowerCase()}.xlsx`;
-    XLSX.writeFile(wb, filename);
+    XLSX.writeFile(wb, `bookings_${eventName.replace(/\s+/g, "_").toLowerCase()}.xlsx`);
 }
 
 function exportEventPDF(eventName, rows) {
@@ -103,11 +115,11 @@ function exportEventPDF(eventName, rows) {
     <div class="event-block">
       <div class="event-header">
         <span class="event-name">${eventName}</span>
-        <span class="event-meta"><span>${totalTickets} ticket${totalTickets !== 1 ? "s" : ""} sold</span></span>
+        <span class="event-meta"><span>${totalTickets} registration${totalTickets !== 1 ? "s" : ""}</span></span>
       </div>
       <table>
         <thead><tr>
-          <th>Attendee</th><th>Tickets</th><th>Status</th><th>Booked On</th>
+          <th>Attendee</th><th>Registrations</th><th>Fee</th><th>Status</th><th>Booked On</th>
         </tr></thead>
         <tbody>
           ${rows.map(b => `
@@ -117,7 +129,8 @@ function exportEventPDF(eventName, rows) {
                 <div class="att-sub">${b.email}</div>
                 <div class="att-sub">${b.phone}</div>
               </td>
-              <td><span class="badge b-ticket">${b.tickets} ticket${b.tickets !== 1 ? "s" : ""}</span></td>
+              <td><span class="badge b-ticket">${b.tickets} reg${b.tickets !== 1 ? "s" : ""}</span></td>
+              <td>$${(b.totalAmount || 0).toFixed(2)}</td>
               <td><span class="badge ${badgeClass(b.status)}">${b.status}</span></td>
               <td>${b.bookedOn}</td>
             </tr>`).join("")}
@@ -160,7 +173,9 @@ function AttendeeRow({ booking }) {
                 <div style={{ fontSize: 12, color: "#6b7280", fontFamily: FONT }}>{booking.phone}</div>
             </td>
             <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6", fontSize: 13, color: "#374151", fontFamily: FONT }}>{booking.event}</td>
-            <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6" }}><TicketBadge count={booking.tickets} /></td>
+            <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6" }}><RegistrationBadge count={booking.tickets} /></td>
+            <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6" }}><AttendeeBadge count={1} /></td>
+            <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6" }}><FeeBadge amount={booking.totalAmount || 0} /></td>
             <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6" }}><StatusBadge status={booking.status} /></td>
             <td style={{ padding: "11px 20px", borderBottom: "1px solid #f3f4f6", fontSize: 13, color: "#6b7280", fontFamily: FONT }}>{booking.bookedOn}</td>
         </tr>
@@ -169,19 +184,43 @@ function AttendeeRow({ booking }) {
 
 export default function AllBookings() {
     const [search, setSearch] = useState("");
+    const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsub = subscribeToBookings((data) => {
+            const formatted = data.map(b => ({
+                id: b.id,
+                name: b.attendeeName || "Unknown",
+                email: b.attendeeEmail || "",
+                phone: b.attendeePhone || "",
+                event: b.eventTitle || "Untitled Event",
+                tickets: b.ticketQuantity || 1,
+                totalAmount: b.totalAmount || 0,
+                status: b.status || "Pending",
+                bookedOn: b.bookingDate ? new Date(b.bookingDate).toLocaleDateString() : "Unknown",
+            }));
+            setBookings(formatted);
+            setLoading(false);
+        }, (err) => {
+            console.error(err);
+            setLoading(false);
+        });
+        return () => unsub();
+    }, []);
 
     const isSearching = search.trim().length > 0;
 
     const filtered = useMemo(() => {
         const q = search.toLowerCase().trim();
-        if (!q) return BOOKINGS_DATA;
-        return BOOKINGS_DATA.filter(b =>
-            b.name.toLowerCase().includes(q) ||
-            b.email.toLowerCase().includes(q) ||
-            b.phone.includes(q) ||
-            b.event.toLowerCase().includes(q)
+        if (!q) return bookings;
+        return bookings.filter(b =>
+            b.name?.toLowerCase().includes(q) ||
+            b.email?.toLowerCase().includes(q) ||
+            b.phone?.includes(q) ||
+            b.event?.toLowerCase().includes(q)
         );
-    }, [search]);
+    }, [search, bookings]);
 
     const grouped = useMemo(() =>
         filtered.reduce((acc, b) => {
@@ -218,16 +257,20 @@ export default function AllBookings() {
 
             {/* Table */}
             <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden" }}>
-                {Object.keys(grouped).length === 0 ? (
+                {loading ? (
                     <div style={{ padding: "48px 24px", textAlign: "center", color: "#9ca3af", fontSize: 14, fontFamily: FONT }}>
-                        No bookings match your search.
+                        Loading bookings…
+                    </div>
+                ) : Object.keys(grouped).length === 0 ? (
+                    <div style={{ padding: "48px 24px", textAlign: "center", color: "#9ca3af", fontSize: 14, fontFamily: FONT }}>
+                        {isSearching ? "No bookings match your search." : "No bookings found."}
                     </div>
                 ) : isSearching ? (
                     /* Search mode: individual attendee rows */
                     <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FONT }}>
                         <thead>
                             <tr style={{ background: "#fafafa" }}>
-                                {["Attendee", "Event", "Tickets", "Status", "Booked On"].map(h => (
+                                {["Attendee", "Event", "Registrations", "Attendees", "Fee", "Status", "Booked On"].map(h => (
                                     <th key={h} style={{
                                         padding: "12px 20px", textAlign: "left", fontSize: 12,
                                         fontWeight: 700, color: "#6b7280", borderBottom: "1px solid #f3f4f6",
@@ -241,11 +284,11 @@ export default function AllBookings() {
                         </tbody>
                     </table>
                 ) : (
-                    /* Default mode: one row per event, total registrations only */
+                    /* Default mode: one row per event — order: Registrations | Attendees | Fee */
                     <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FONT }}>
                         <thead>
                             <tr style={{ background: "#fafafa" }}>
-                                {["Event Name", "Total Registrations", ""].map(h => (
+                                {["Event Name", "Total Registrations", "Total Attendees", "Total Fee", ""].map(h => (
                                     <th key={h} style={{
                                         padding: "12px 20px", textAlign: "left", fontSize: 12,
                                         fontWeight: 700, color: "#6b7280", borderBottom: "1px solid #f3f4f6",
@@ -256,14 +299,25 @@ export default function AllBookings() {
                         </thead>
                         <tbody>
                             {Object.entries(grouped).map(([eventName, rows]) => {
-                                const totalTickets = rows.reduce((s, b) => s + b.tickets, 0);
+                                const totalTickets = rows.reduce((s, b) => s + (b.tickets || 0), 0);
+                                const totalFee = rows.reduce((s, b) => s + (b.totalAmount || 0), 0);
+                                const uniqueAttendees = new Set(rows.map(b => b.email)).size;
                                 return (
                                     <tr key={eventName}>
                                         <td style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6", fontSize: 14, fontWeight: 700, color: "#18103a", fontFamily: FONT }}>
                                             {eventName}
                                         </td>
+                                        {/* 1. Total Registrations */}
                                         <td style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6" }}>
-                                            <TicketBadge count={totalTickets} />
+                                            <RegistrationBadge count={totalTickets} />
+                                        </td>
+                                        {/* 2. Total Attendees */}
+                                        <td style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6" }}>
+                                            <AttendeeBadge count={uniqueAttendees} />
+                                        </td>
+                                        {/* 3. Total Fee */}
+                                        <td style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6" }}>
+                                            <FeeBadge amount={totalFee} />
                                         </td>
                                         <td style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6" }}>
                                             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
