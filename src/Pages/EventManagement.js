@@ -536,8 +536,7 @@ function CreateEditEventView({ onBack, onSaved, editingEvent }) {
                                         <select value={form.status} onChange={handleChange("status")}
                                             className={`${inputClass} appearance-none pr-9 cursor-pointer`}>
                                             <option>Upcoming</option>
-                                            <option>Past</option>
-                                            <option>Cancelled</option>
+                                            <option>Ongoing</option>
                                         </select>
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                             <ChevronDownIcon />

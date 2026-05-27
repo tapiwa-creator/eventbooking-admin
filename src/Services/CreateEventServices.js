@@ -73,7 +73,7 @@ export async function createEvent(eventData, imageFile = null) {
 
         const docRef = await addDoc(eventsRef(), payload);
 
-        console.log("✅ Event created:", docRef.id);
+// removed // console.log
         return docRef.id;
     } catch (err) {
         console.error("❌ createEvent error:", err);
@@ -117,7 +117,7 @@ export async function updateEvent(id, data, imageFile = null) {
 
         await updateDoc(doc(db, EVENTS_COL, id), payload);
 
-        console.log("✅ Event updated:", id);
+// removed // console.log
     } catch (err) {
         console.error("❌ updateEvent error:", err);
         throw err;
@@ -130,7 +130,7 @@ export async function deleteEvent(id) {
     try {
         await deleteDoc(doc(db, EVENTS_COL, id));
 
-        console.log("🗑️ Event deleted:", id);
+// removed // console.log
     } catch (err) {
         console.error("❌ deleteEvent error:", err);
         throw err;

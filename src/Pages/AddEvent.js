@@ -43,7 +43,7 @@ const BLANK_FORM = {
     currency: "ZAR", pricingMode: "flat", price: "", unit: "ticket",
 };
 
-const STATUS_OPTIONS = ["Upcoming", "Ongoing", "Completed", "Cancelled"];
+const STATUS_OPTIONS = ["Upcoming", "Ongoing"];
 
 const inp = {
     height: "44px",

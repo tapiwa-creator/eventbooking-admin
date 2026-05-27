@@ -26,7 +26,7 @@ export async function createBooking(bookingData) {
         };
 
         const docRef = await addDoc(bookingsRef, bookingPayload);
-        console.log("✅ Booking saved:", docRef.id);
+// removed // console.log
 
         return docRef.id;
     } catch (error) {
@@ -86,7 +86,7 @@ export async function updateBookingStatus(bookingId, newStatus) {
             status: newStatus,
             updatedAt: serverTimestamp(),
         });
-        console.log(`✅ Booking ${bookingId} status updated to ${newStatus}`);
+// removed // console.log
         return true;
     } catch (error) {
         console.error("Error updating booking status:", error);
