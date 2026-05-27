@@ -3,7 +3,7 @@ import { supabase } from "../supabaseClient";
 export async function uploadEventImage(file) {
     const fileName = `events/${Date.now()}-${file.name}`;
 
-    const { data, error } = await supabase
+    const { error } = await supabase
         .storage
         .from("event-images")
         .upload(fileName, file);

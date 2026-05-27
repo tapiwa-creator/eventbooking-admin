@@ -752,7 +752,7 @@ export default function EventManagement({ initialView = "list", onBack }) {
     const [isNetworkErr, setIsNetErr] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
     const [deletingEvent, setDeletingEvent] = useState(null);
-    const [saving, setSaving] = useState(false);
+    const [, setSaving] = useState(false);
 
     useEffect(() => { setView(initialView); }, [initialView]);
 

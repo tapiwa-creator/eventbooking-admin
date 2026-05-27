@@ -203,7 +203,7 @@ export default function LoginPage({ onAuth }) {
                                     <PrimaryBtn type="submit"><UserPlusIcon /> Create Account</PrimaryBtn>
                                     <p style={{ textAlign: "center", fontSize: "11.5px", color: "#9ca3af", margin: 0, fontFamily: FONT }}>
                                         By signing up you agree to our{" "}
-                                        <a href="#" style={{ color: GREEN_LIGHT, fontWeight: 600, textDecoration: "none" }}>Terms of Service</a>
+                                        <span style={{ color: GREEN_LIGHT, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>Terms of Service</span>
                                     </p>
                                 </form>
                                 <p style={{ textAlign: "center", marginTop: "16px", fontSize: "13px", color: "#9ca3af", fontFamily: FONT }}>
