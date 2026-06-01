@@ -9,8 +9,10 @@ export async function uploadEventImage(file) {
         .upload(fileName, file);
 
 
-
         
+
+
+
     if (error) {
         throw new Error(error.message);
     }
