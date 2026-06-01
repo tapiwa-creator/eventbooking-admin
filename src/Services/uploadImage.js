@@ -8,6 +8,9 @@ export async function uploadEventImage(file) {
         .from("event-images")
         .upload(fileName, file);
 
+
+
+        
     if (error) {
         throw new Error(error.message);
     }
