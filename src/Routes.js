@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AuthService from "./Services/AuthService";
+import { cleanupOldEvents } from "./Services/CleanupServices";
 
 // ─── Pages ────────────────────────────────────────────────────────────────────
 import Auth from "./Pages/Auth";
@@ -23,6 +24,12 @@ export default function Routes() {
             document.body.scrollTop = 0;
         }, 10);
     }, [currentPath]);
+
+    useEffect(() => {
+        if (user) {
+            cleanupOldEvents();
+        }
+    }, [user]);
 
     const handleAuth = (userData) => {
         setUser(userData);

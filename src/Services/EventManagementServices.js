@@ -1,6 +1,6 @@
 // Services/CreateEventServices.js
 
-import { db, storage } from "./firebase"; // Your Firebase config
+import { db, storage } from "../firebase"; // Your Firebase config
 import {
     collection,
     addDoc,
@@ -9,7 +9,8 @@ import {
     doc,
     onSnapshot,
     query,
-    orderBy
+    orderBy,
+    getDoc
 } from "firebase/firestore";
 import {
     ref,

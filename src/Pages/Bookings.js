@@ -258,8 +258,18 @@ export default function AllBookings() {
             {/* Table */}
             <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden" }}>
                 {loading ? (
-                    <div style={{ padding: "48px 24px", textAlign: "center", color: "#9ca3af", fontSize: 14, fontFamily: FONT }}>
-                        Loading bookings…
+                    <div className="animate-pulse p-6">
+                        <div className="h-6 bg-gray-200 rounded w-1/4 mb-6"></div>
+                        <div className="flex flex-col gap-4">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="h-10 bg-gray-100 rounded flex-1"></div>
+                                    <div className="h-10 bg-gray-100 rounded flex-1"></div>
+                                    <div className="h-10 bg-gray-100 rounded flex-1"></div>
+                                    <div className="h-10 bg-gray-100 rounded w-24"></div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ) : Object.keys(grouped).length === 0 ? (
                     <div style={{ padding: "48px 24px", textAlign: "center", color: "#9ca3af", fontSize: 14, fontFamily: FONT }}>

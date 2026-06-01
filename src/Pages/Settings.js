@@ -65,7 +65,7 @@ function SectionCard({ icon, title, subtitle, children }) {
     );
 }
 
-function Field({ label, type = "text", value, onChange, error, placeholder, rightEl, readOnly }) {
+function Field({ label, type = "text", value, onChange, error, placeholder, rightEl, readOnly, autoComplete }) {
     const [focused, setFocused] = useState(false);
     return (
         <div style={{ marginBottom: "16px" }}>
@@ -74,7 +74,7 @@ function Field({ label, type = "text", value, onChange, error, placeholder, righ
             </label>
             <div style={{ position: "relative" }}>
                 <input
-                    type={type} value={value} placeholder={placeholder} readOnly={readOnly}
+                    type={type} value={value} placeholder={placeholder} readOnly={readOnly} autoComplete={autoComplete}
                     onChange={e => onChange && onChange(e.target.value)}
                     onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
                     style={{
@@ -168,6 +168,7 @@ function ProfileSection({ user, onUserUpdate }) {
 function EmailSection({ user, onUserUpdate }) {
     const [newEmail, setNewEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPass, setShowPass] = useState(false);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -202,7 +203,8 @@ function EmailSection({ user, onUserUpdate }) {
         <SectionCard icon={<MailIcon />} title="Change Email" subtitle="Update the email address on your account">
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <Field label="New Email Address" type="email" value={newEmail} onChange={setNewEmail} error={errors.email} placeholder="new@example.com" />
-                <Field label="Current Password (to confirm)" type="password" value={password} onChange={setPassword} error={errors.password} placeholder="Enter your password" />
+                <Field label="Current Password (to confirm)" type={showPass ? "text" : "password"} value={password} onChange={setPassword} error={errors.password} placeholder="Enter your password" autoComplete="new-password"
+                    rightEl={<button onClick={() => setShowPass(p => !p)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: 0, display: "flex" }}><EyeIcon off={showPass} /></button>} />
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <SaveBtn onClick={handleSave} loading={loading}><CheckIcon /> Update Email</SaveBtn>

@@ -352,7 +352,7 @@ function AllEventsView({ events, onNavigateToCreate, onEditEvent, onDeleteEvent,
                     <p className="mt-3 text-sm">No events found</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {filtered.map(event => (
                         <EventCard
                             key={event.id}
@@ -834,11 +834,33 @@ export default function EventManagement({ initialView = "list", onBack }) {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                        style={{ borderColor: "#059669", borderTopColor: "transparent" }} />
-                    <p className="text-sm text-gray-500">Loading events…</p>
+            <div className="min-h-screen bg-gray-50 p-6 font-sans animate-pulse">
+                <div className="flex items-start justify-between mb-6">
+                    <div>
+                        <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded w-64"></div>
+                    </div>
+                </div>
+                <div className="flex gap-3 mb-6">
+                    <div className="flex-1 h-12 bg-gray-200 rounded-xl"></div>
+                    <div className="w-32 h-12 bg-gray-200 rounded-xl"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col">
+                            <div className="h-52 bg-gray-200"></div>
+                            <div className="p-5 flex flex-col gap-3">
+                                <div className="h-6 bg-gray-200 rounded w-3/4 mb-1"></div>
+                                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                                <div className="mt-2 flex flex-col gap-2">
+                                    <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+                                    <div className="h-4 bg-gray-100 rounded w-2/3"></div>
+                                    <div className="h-4 bg-gray-100 rounded w-1/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );

@@ -158,7 +158,7 @@ function LogoutModal({ onConfirm, onCancel }) {
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
+export default function Sidebar({ currentPath, onNavigate, onLogout, user, isOpen, onClose }) {
   const [showLogout, setShowLogout]     = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -190,15 +190,20 @@ export default function Sidebar({ currentPath, onNavigate, onLogout, user }) {
         .sb-user-row:hover  { background: rgba(255, 255, 255, 0.05) !important; }
       `}</style>
 
-      <aside style={{
-        position: "fixed", top: 0, left: 0,
-        width: "230px", height: "100vh",
-        background: "#1a2e1f",
-        borderRight: "0.5px solid rgba(255, 255, 255, 0.08)",
-        display: "flex", flexDirection: "column",
-        zIndex: 100, fontFamily: FONT,
-        overflowY: "auto", overflowX: "hidden",
-      }}>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      <aside className={`fixed top-0 left-0 w-[230px] h-screen bg-[#1a2e1f] flex flex-col z-50 transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{
+          borderRight: "0.5px solid rgba(255, 255, 255, 0.08)",
+          fontFamily: FONT,
+          overflowY: "auto", overflowX: "hidden",
+        }}>
 
         {/* ── Brand ── */}
         <div style={{

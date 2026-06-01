@@ -8,7 +8,8 @@ import {
     orderBy,
     serverTimestamp,
     where,
-    getDocs
+    getDocs,
+    deleteDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -73,6 +74,23 @@ export async function getBookingsByEvent(eventId) {
         }));
     } catch (error) {
         console.error("Error fetching event bookings:", error);
+        throw error;
+    }
+}
+
+// Delete all bookings associated with an event
+export async function deleteBookingsByEvent(eventId) {
+    try {
+        const bookingsRef = collection(db, BOOKINGS_COL);
+        const q = query(bookingsRef, where("eventId", "==", eventId));
+        const snapshot = await getDocs(q);
+
+        const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, BOOKINGS_COL, docSnap.id)));
+        await Promise.all(deletePromises);
+        console.log(`✅ Deleted ${snapshot.size} bookings for event ${eventId}`);
+        return true;
+    } catch (error) {
+        console.error("Error deleting event bookings:", error);
         throw error;
     }
 }

@@ -119,7 +119,7 @@ function DateDropdown({ onClose }) {
   );
 }
 
-export default function Header({ user }) {
+export default function Header({ user, onMenuClick }) {
   // ── Calendar closed by default; user clicks to open ──
   const [dateOpen, setDateOpen] = useState(false);
 
@@ -147,16 +147,17 @@ export default function Header({ user }) {
       `}</style>
 
       <header
+        className="fixed top-0 right-0 z-40 h-[64px] bg-white flex items-center justify-between px-4 md:px-7 left-0 md:left-[230px]"
         style={{
-          position: "fixed", top: 0, left: "230px", right: 0, zIndex: 50,
-          height: "64px", background: "#ffffff",
           borderBottom: "0.5px solid var(--color-border-tertiary)",
-          padding: "0 28px", display: "flex", alignItems: "center",
-          justifyContent: "space-between", fontFamily: FONT, boxShadow: "none",
+          fontFamily: FONT,
         }}
       >
-        <div>
-          <span style={{ fontSize: "16px", fontWeight: 600, color: "#111827" }}>{greetingText}</span>
+        <div className="flex items-center gap-2 md:gap-0">
+          <button onClick={onMenuClick} className="md:hidden p-1.5 -ml-1 text-gray-600 rounded-lg hover:bg-gray-100">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <span className="text-sm md:text-base" style={{ fontWeight: 600, color: "#111827" }}>{greetingText}</span>
         </div>
 
         <div style={{ position: "relative" }}>

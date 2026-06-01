@@ -62,6 +62,51 @@ const avatarColors = [
     { bg: '#fef3c7', text: '#b45309' },
 ];
 
+function DashboardSkeleton() {
+    return (
+        <div className="font-sans animate-pulse">
+            <div className="flex items-start justify-between mb-6">
+                <div>
+                    <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-96"></div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="bg-white rounded-xl border border-gray-100 p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="h-4 bg-gray-200 rounded w-24"></div>
+                            <div className="w-9 h-9 bg-gray-200 rounded-lg"></div>
+                        </div>
+                        <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-32"></div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl border border-gray-100 p-6">
+                    <div className="h-5 bg-gray-200 rounded w-32 mb-6"></div>
+                    <div className="flex flex-col gap-3">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-20 bg-gray-100 rounded-xl"></div>
+                        ))}
+                    </div>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-100 p-6">
+                    <div className="h-5 bg-gray-200 rounded w-32 mb-6"></div>
+                    <div className="flex flex-col gap-3">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-20 bg-gray-100 rounded-xl"></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard() {
     const [events, setEvents] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -251,15 +296,7 @@ export default function Dashboard() {
     const recentBookings = getRecentBookings();
 
     if (loading) {
-        return (
-            <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                        style={{ borderColor: "#4ab360", borderTopColor: "transparent" }} />
-                    <p className="text-sm text-gray-500">Loading dashboard...</p>
-                </div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     return (
@@ -279,7 +316,7 @@ export default function Dashboard() {
                 />
             )}
 
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {stats.map((stat) => (
                     <div key={stat.label} className="bg-white relative overflow-hidden" style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)", padding: "20px" }}>
                         <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ backgroundColor: stat.color }} />
@@ -295,7 +332,7 @@ export default function Dashboard() {
                 ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white shadow-none" style={{ borderRadius: "12px", border: "0.5px solid var(--color-border-tertiary)", padding: "24px" }}>
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-base font-bold text-gray-900">Upcoming Events</h2>
