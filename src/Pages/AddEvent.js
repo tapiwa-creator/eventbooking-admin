@@ -303,7 +303,7 @@ export default function CreateEventView({ onBack, onCreated }) {
 
                     {/* RIGHT: image + publish */}
                     <div style={{ width: "240px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
-                        <SectionTitle title="Event Image" sub="Uploaded to Firebase Storage" />
+                        <SectionTitle title="Event Image" sub="Upload Image of Event " />
 
                         <div style={{
                             border: "1.5px dashed #d1d5db", borderRadius: "12px", height: "200px",

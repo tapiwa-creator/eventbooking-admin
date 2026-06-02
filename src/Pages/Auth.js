@@ -70,6 +70,71 @@ function InputField({ label, type = "text", value, onChange, error, placeholder,
     );
 }
 
+function TermsModal({ onClose }) {
+    return (
+        <div style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.45)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "20px",
+        }}>
+            <div style={{
+                background: "#ffffff",
+                borderRadius: "20px",
+                width: "100%",
+                maxWidth: "480px",
+                overflow: "hidden",
+                fontFamily: FONT,
+            }}>
+                {/* Header */}
+                <div style={{
+                    background: "#14532d",
+                    padding: "24px 28px",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                }}>
+                    <div>
+                        <h2 style={{ fontFamily: DISPLAY_FONT, fontSize: "20px", fontWeight: 800, color: "#fff", margin: "0 0 3px" }}>Terms of Service</h2>
+                        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.78)", margin: 0 }}>AdventSphere · Seventh-day Adventist Platform</p>
+                    </div>
+
+                </div>
+
+                {/* Body */}
+                <div style={{ padding: "24px 28px", maxHeight: "360px", overflowY: "auto" }}>
+                    {[
+                        {
+                            title: "1. User Accounts",
+                            body: "You are responsible for maintaining the confidentiality of your account credentials. Any activity that occurs under your account is your responsibility. Please notify us immediately of any unauthorised use.",
+                        },
+                        {
+                            title: "2. Content Ownership",
+                            body: "You retain ownership of all programme content you upload. By uploading content, you grant AdventSphere a limited licence to store and display that content to authorised users of the platform.",
+                        },
+                        {
+                            title: "3. Termination",
+                            body: "We reserve the right to suspend or terminate accounts that violate these terms or misuse the platform.",
+                        },
+                    ].map((section, i) => (
+                        <div key={i}>
+                            {i > 0 && <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: "16px 0" }} />}
+                            <p style={{ fontSize: "11px", fontWeight: 700, color: GREEN, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{section.title}</p>
+                            <p style={{ fontSize: "13px", color: "#374151", lineHeight: 1.75, margin: 0 }}>{section.body}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Footer */}
+                <div style={{ padding: "16px 28px 24px", borderTop: "1px solid #e5e7eb" }}>
+                    <p style={{ fontSize: "12px", color: "#6b7280", textAlign: "center", margin: "0 0 14px", lineHeight: 1.6 }}>
+                        By signing up you agree to these Terms of Service.
+                    </p>
+                    <PrimaryBtn onClick={onClose}>Close</PrimaryBtn>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function LoginPage({ onAuth }) {
     const [tab, setTab] = useState("signin");
     const [siEmail, setSiEmail] = useState("");
@@ -82,6 +147,7 @@ export default function LoginPage({ onAuth }) {
     const [regConfirm, setRegConfirm] = useState("");
     const [regErrors, setRegErrors] = useState({});
     const [regDone, setRegDone] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     async function handleSignIn(e) {
         if (e) e.preventDefault();
@@ -203,7 +269,7 @@ export default function LoginPage({ onAuth }) {
                                     <PrimaryBtn type="submit"><UserPlusIcon /> Create Account</PrimaryBtn>
                                     <p style={{ textAlign: "center", fontSize: "11.5px", color: "#9ca3af", margin: 0, fontFamily: FONT }}>
                                         By signing up you agree to our{" "}
-                                        <span style={{ color: GREEN_LIGHT, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>Terms of Service</span>
+                                        <span onClick={() => setShowTerms(true)} style={{ color: GREEN_LIGHT, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>Terms of Service</span>
                                     </p>
                                 </form>
                                 <p style={{ textAlign: "center", marginTop: "16px", fontSize: "13px", color: "#9ca3af", fontFamily: FONT }}>
@@ -216,6 +282,8 @@ export default function LoginPage({ onAuth }) {
                 </div>
 
             </div>
+
+            {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
         </div>
     );
 }

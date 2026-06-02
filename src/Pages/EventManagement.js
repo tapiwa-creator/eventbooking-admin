@@ -662,7 +662,7 @@ function CreateEditEventView({ onBack, onSaved, editingEvent }) {
                 <div className="w-80 flex flex-col gap-4">
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                         <h2 className="text-base font-bold text-gray-900">Event Image</h2>
-                        <p className="text-sm text-gray-400 mt-0.5 mb-4">Uploaded to Firebase Storage — permanent across all sessions</p>
+                        <p className="text-sm text-gray-400 mt-0.5 mb-4">Uploaded Image of Event — permanent across all sessions</p>
 
                         <label className="block cursor-pointer">
                             <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleImageUpload} />
