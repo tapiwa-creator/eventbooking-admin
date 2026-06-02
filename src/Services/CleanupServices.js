@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { deleteEvent } from "./EventManagementServices";
 import { deleteBookingsByEvent } from "./BookingsServices";
 
